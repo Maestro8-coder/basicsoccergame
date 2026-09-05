@@ -177,11 +177,11 @@
                         <p class="mt-1">• Hold <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">SPACE</span> to charge up your kick power.</p>
                     </div>
                     <div class="p-4 bg-slate-950 rounded-lg border border-slate-800">
-                        <span class="font-bold text-white block mb-2 text-yellow-400">🏃‍♀️ PLAYER 2 CONTROLS (ARROWS)</span>
-                        <p>• Use <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">▲</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">▼</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">◀</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">▶</span> to move.</p>
-                        <p class="mt-1">• Press <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">.</span> to Tackle.</p>
-                        <p class="mt-1">• Press <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">R-CTRL</span> to Dribble.</p>
-                        <p class="mt-1">• Hold <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">/</span> to charge up your kick power.</p>
+                        <span class="font-bold text-white block mb-2 text-yellow-400">🏃‍♀️ PLAYER 2 CONTROLS (IJKL)</span>
+                        <p>• Use <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">I</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">J</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">K</span> <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">L</span> to move.</p>
+                        <p class="mt-1">• Press <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">O</span> to Tackle.</p>
+                        <p class="mt-1">• Press <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">U</span> to Dribble.</p>
+                        <p class="mt-1">• Hold <span class="text-white font-mono bg-slate-800 px-1 py-0.5 rounded">ENTER</span> to charge up your kick power.</p>
                     </div>
                     <div class="p-4 bg-slate-950 rounded-lg border border-slate-800">
                         <span class="font-bold text-white block mb-2 text-rose-400">🚀 ABILITIES & GADGETS</span>
@@ -758,7 +758,7 @@
                 chargePower = Math.max(0, chargePower - dt * .32);
             }
             
-            if (keys.has("/") && twoPlayerMode) {
+            if (keys.has("enter") && twoPlayerMode) {
                 player2ChargePower = Math.min(2.2, player2ChargePower + dt);
             } else {
                 player2ChargePower = Math.max(0, player2ChargePower - dt * .32);
@@ -820,10 +820,10 @@
 
             const player2Movement = (dt) => {
                 let dx = 0, dy = 0;
-                if (keys.has("arrowleft")) dx -= 1;
-                if (keys.has("arrowright")) dx += 1;
-                if (keys.has("arrowup")) dy -= 1;
-                if (keys.has("arrowdown")) dy += 1;
+                if (keys.has("j")) dx -= 1;
+                if (keys.has("l")) dx += 1;
+                if (keys.has("i")) dy -= 1;
+                if (keys.has("k")) dy += 1;
                 if (dx || dy) { const length = Math.hypot(dx, dy); cpu.directionX = dx / length; cpu.directionY = dy / length; cpu.x += cpu.directionX * cpu.speed * dt; cpu.y += cpu.directionY * cpu.speed * dt; }
                 clampPlayer(cpu);
             };
@@ -1209,18 +1209,16 @@
         function handleKeyDown(event) {
             if (!isGameRunning) return;
             const key = event.key.toLowerCase();
-            if (twoPlayerMode && event.key === "Control") keys.add("rightcontrol");
-            if (twoPlayerMode && event.key === ".") keys.add(".");
-            if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "w", "a", "s", "d", "e", "q", "f", "/"].includes(key)) event.preventDefault();
+            if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "w", "a", "s", "d", "e", "q", "f", "enter", "i", "j", "k", "l", "u", "o"].includes(key)) event.preventDefault();
             keys.add(key);
 
-            if (twoPlayerMode && key === "/" && !event.repeat && !gameOver && resetDelay <= 0 && kickCooldown <= 0) {
+            if (twoPlayerMode && key === "enter" && !event.repeat && !gameOver && resetDelay <= 0 && kickCooldown <= 0) {
                 player2ChargeStart = performance.now();
             }
             if (key === " " && !event.repeat && !gameOver && resetDelay <= 0 && kickCooldown <= 0) {
                 chargeStart = performance.now();
             }
-            if ((key === "e" || (twoPlayerMode && key === ".")) && !event.repeat && !gameOver && resetDelay <= 0 && tackleCooldown <= 0) {
+            if ((key === "e" || (twoPlayerMode && key === "o")) && !event.repeat && !gameOver && resetDelay <= 0 && tackleCooldown <= 0) {
                 if (twoPlayerMode && Math.hypot(player.x - cpu.x, player.y - cpu.y) < player.r + cpu.r + 34) {
                     tackleCooldown = 5;
                     tackleIndicator = 1.1;
@@ -1266,7 +1264,7 @@
                 showMessage("Grappling Hook equipped. Click anywhere on the pitch to teleport!", 1.8);
                 tone(980, .1, "triangle", .05);
             }
-            if ((key === "q" || (twoPlayerMode && key === "rightcontrol")) && !event.repeat && (hasBall || player2HasBall) && !gameOver && resetDelay <= 0 && dribbleCooldown <= 0) {
+            if ((key === "q" || (twoPlayerMode && key === "u")) && !event.repeat && (hasBall || player2HasBall) && !gameOver && resetDelay <= 0 && dribbleCooldown <= 0) {
                 dribbleTimer = 1;
                 dribbleCooldown = 5;
                 dribbleIndicator = 1.1;
@@ -1281,8 +1279,6 @@
             if (!isGameRunning) return;
             const key = event.key.toLowerCase();
             keys.delete(key);
-            if (event.key === "Control") keys.delete("rightcontrol");
-            if (event.key === ".") keys.delete(".");
             
             if (key === " " && chargeStart) {
                 if (hasBall && chargePower > .12) {
@@ -1297,7 +1293,7 @@
                 }
                 chargeStart = 0;
             }
-            if (twoPlayerMode && key === "/" && player2ChargeStart) {
+            if (twoPlayerMode && key === "enter" && player2ChargeStart) {
                 if (player2HasBall && player2ChargePower > .12) {
                     const power = 300 + player2ChargePower * 360;
                     const heldPower = player2ChargePower;
