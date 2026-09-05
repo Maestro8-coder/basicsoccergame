@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="en">
+ <head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260904-05-c4a2e96","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Canva Sans":"YAFLd8sKbwc,2","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAHO2VMiyZo,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAEul-FRQw4,0","Georgia":"YAGzXkO0pEM,0","Helvetica Neue":"YAFcf6CtJfI,0","Impact":"YAFcfnjI7Vk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Libre Baskerville":"YACgEUFdPdA,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YADLjI9qxTA,0","Nunito":"YACgEX8C5Gg,0","Oleo Script":"YACgEQQ14jI,0","Phantom Sans":"YAHO2E8Pb88,0","Playfair Display":"YACgEYmuCJE,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YADWjpfPmdk,0","Raleway":"YACgEVg3xZg,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Ubuntu":"YACgERDU--Q,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YADlN8CFZ8Q,0","ui-sans-serif":"YACkoN-xg4g,0"}}');</script><script src="/_sdk/9e99ecf74af2a081.telemetry_sdk.js" integrity="sha512-tZ7fmfTx2KpCLjXQnEuL9azQ4A5+7+xumsx6r/WYVD0zCP/8LP8hDeCypMQesmP+WyAew4g7l5Ah23Bjd6yoVg=="></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Down Soccer</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #12302a;
+      --cream: #fffbe8;
+      --blue: #1769e0;
+      --orange: #ff6b27;
+      --green: #1e9a59;
+      --yellow: #ffd34e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+    }
+
+    .game-shell {
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      overflow-x: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .game-shell::before,
+    .game-shell::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .game-shell::before {
+      width: 23rem;
+      height: 23rem;
+      left: -10rem;
+      top: 9rem;
+      background: rgba(255, 211, 78, .3);
+      filter: blur(4px);
+    }
+
+    .game-shell::after {
+      width: 19rem;
+      height: 19rem;
+      right: -8rem;
+      bottom: 2rem;
+      background: rgba(23, 105, 224, .15);
+    }
+
+    .scoreboard {
+      background: rgba(255, 251, 232, .94);
+      border: 3px solid var(--ink);
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+
+    .score-value {
+      min-width: 42px;
+      display: inline-grid;
+      place-items: center;
+      padding: .15rem .5rem;
+      border-radius: .5rem;
+      color: white;
+      font-weight: 800;
+      font-size: 1.35rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pitch-frame {
+      border: 5px solid var(--ink);
+      box-shadow: 10px 10px 0 var(--ink);
+      background: var(--ink);
+      border-radius: 1.35rem;
+      overflow: hidden;
+    }
+
+    .pitch-canvas {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16 / 10;
+      background: #219b58;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .pitch-canvas:focus {
+      outline: 5px solid var(--yellow);
+      outline-offset: -5px;
+    }
+
+    .control-card {
+      border: 3px solid var(--ink);
+      background: #fffbe8;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+
+    .keycap {
+      min-width: 2rem;
+      border: 2px solid var(--ink);
+      border-bottom-width: 4px;
+      border-radius: .4rem;
+      background: white;
+      text-align: center;
+      padding: .18rem .42rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .action-button {
+      border: 3px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .action-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+    .action-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+    .action-button:focus-visible { outline: 4px solid var(--yellow); outline-offset: 3px; }
+
+    .pulse-dot { animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 50% { transform: scale(.7); opacity: .55; } }
+
+    .status-pill {
+      min-height: 2.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hidden-state { display: none !important; }
+
+    @media (max-width: 640px) {
+      .pitch-frame { box-shadow: 6px 6px 0 var(--ink); border-width: 4px; }
+      .scoreboard { box-shadow: 4px 4px 0 var(--ink); }
+    }
+  </style>
+  <script src="/_sdk/fbe2ebfd64647c54.data_sdk.js" type="text/javascript" integrity="sha512-vkTX6CfvpHc3WbjK+tFJCaDuw4ERA4aEV/e5/7+MMJPMTF4RJYCI6CAwJBT/gtDW+dba4uLSsPUgDjVDHWtgUQ=="></script>
+  <script src="/_sdk/fcb6dc01f91829ac.resizing_sdk.js" type="text/javascript" integrity="sha512-YK8JfnN705qaEaVhiL7pcVB2Rs/BbdX5yxV55Az8zT/1JanyEWTw9HqCF915m9iV1YEaoil8qsjJz03l1Kb0Ug=="></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+ </head>
+ <body data-template-id="__page-root">
+  <div class="game-shell px-4 py-5 sm:px-7 sm:py-7">
+   <header class="mx-auto w-full max-w-5xl">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+     <div>
+      <div class="mb-2 flex items-center gap-2"><span class="pulse-dot h-3 w-3 rounded-full bg-[#ff6b27]"></span> <span data-template-id="live-label" class="canva-tag text-xs font-extrabold uppercase tracking-[.18em]"></span>
+      </div>
+      <h1 data-template-id="game-title" class="canva-text font-extrabold leading-none"></h1>
+      <p data-template-id="game-subtitle" class="canva-text mt-2 max-w-lg font-medium"></p>
+     </div>
+     <section data-template-id="scoreboard-panel" class="canva-panel scoreboard rounded-2xl px-4 py-3" aria-label="Match scoreboard">
+      <div class="flex items-center justify-center gap-3 sm:gap-4">
+       <div class="text-center"><span data-template-id="home-label" class="canva-text block text-xs font-extrabold uppercase tracking-wider"></span> <output id="home-score" class="score-value mt-1" aria-label="Home score">0</output>
+       </div>
+       <div class="text-center"><span data-template-id="time-label" class="canva-text block text-xs font-extrabold uppercase tracking-wider"></span> <output id="timer" class="mt-1 block text-2xl font-extrabold tabular-nums" aria-label="Time remaining">1:00</output>
+       </div>
+       <div class="text-center"><span data-template-id="away-label" class="canva-text block text-xs font-extrabold uppercase tracking-wider"></span> <output id="away-score" class="score-value mt-1" aria-label="Away score">0</output>
+       </div>
+      </div>
+     </section>
+    </div>
+   </header>
+   <main class="mx-auto mt-6 w-full max-w-5xl">
+    <section data-template-id="inventory-panel" class="canva-card control-card mb-6 rounded-2xl p-4" aria-label="Skill inventory">
+     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+       <h2 data-template-id="inventory-title" class="canva-text font-extrabold"></h2>
+       <p data-template-id="inventory-copy" class="canva-text mt-1 text-sm font-medium"></p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3"><label data-template-id="difficulty-label" class="canva-text text-sm font-bold" for="difficulty-select"></label> <select id="difficulty-select" class="rounded-lg border-2 border-[#12302a] bg-white px-3 py-1 text-sm font-extrabold focus:outline-none focus:ring-4 focus:ring-[#ffd34e]" aria-label="CPU difficulty"> <option value="easy">Easy</option> <option value="normal" selected>Normal</option> <option value="hard">Hard</option> </select> <label data-template-id="kit-label" class="canva-text text-sm font-bold" for="kit-select"></label> <select id="kit-select" class="rounded-lg border-2 border-[#12302a] bg-white px-3 py-1 text-sm font-extrabold focus:outline-none focus:ring-4 focus:ring-[#ffd34e]" aria-label="Team kit colors"> <option value="usa">USA</option> <option value="brazil">Brazil</option> <option value="france">France</option> <option value="germany">Germany</option> <option value="japan">Japan</option> <option value="spain" selected>Spain</option> <option value="england">England</option> <option value="argentina">Argentina</option><option value="portugal">Portugal</option> </select> <label data-template-id="cpu-kit-label" class="canva-text text-sm font-bold" for="cpu-kit-select"></label> <select id="cpu-kit-select" class="rounded-lg border-2 border-[#12302a] bg-white px-3 py-1 text-sm font-extrabold focus:outline-none focus:ring-4 focus:ring-[#ffd34e]" aria-label="CPU team kit"><option value="usa" selected>USA</option><option value="brazil">Brazil</option><option value="france">France</option><option value="germany">Germany</option><option value="japan">Japan</option><option value="spain">Spain</option><option value="england">England</option><option value="argentina">Argentina</option><option value="portugal">Portugal</option></select> <label data-template-id="mode-label" class="canva-text text-sm font-bold" for="mode-select"></label> <select id="mode-select" class="rounded-lg border-2 border-[#12302a] bg-white px-3 py-1 text-sm font-extrabold focus:outline-none focus:ring-4 focus:ring-[#ffd34e]" aria-label="Game mode"><option value="cpu" selected>1 Player</option></select> <span data-template-id="rocket-status-label" class="canva-text text-sm font-bold"></span> <span id="rocket-status" class="rounded-lg border-2 border-[#12302a] bg-[#ffd34e] px-3 py-1 text-sm font-extrabold" aria-live="polite">EQUIPPED</span>
+      </div>
+     </div>
+    </section>
+    <section aria-label="Soccer game">
+     <div class="pitch-frame">
+      <canvas id="game-canvas" class="pitch-canvas" width="960" height="600" tabindex="0" role="img" aria-label="Top down soccer field. Use arrow keys or WASD to move and Space to kick."></canvas>
+     </div>
+     <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div data-template-id="match-status" class="canva-banner status-pill rounded-xl border-3 border-[#12302a] bg-[#fffbe8] px-4 text-sm font-extrabold shadow-[4px_4px_0_#12302a]" aria-live="polite"><span id="status-text">Kick off! Take the ball to the orange goal.</span>
+      </div>
+      <div class="flex gap-3"><button id="restart-button" data-template-id="restart-button" type="button" class="canva-button action-button inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-extrabold"> <i data-lucide="rotate-ccw" width="18" height="18" aria-hidden="true"></i> <span data-template-id="restart-label" class="canva-text"></span> </button> <button id="sound-button" type="button" class="action-button inline-flex min-w-[116px] items-center justify-center gap-2 rounded-xl bg-[#ffd34e] px-4 py-2 font-extrabold" aria-pressed="true"> <span id="sound-on" class="inline-flex items-center gap-2"> <i data-lucide="volume-2" width="18" height="18" aria-hidden="true"></i> <span data-template-id="sound-on-label" class="canva-text"></span> </span> <span id="sound-off" class="hidden-state inline-flex items-center gap-2"> <i data-lucide="volume-x" width="18" height="18" aria-hidden="true"></i> <span data-template-id="sound-off-label" class="canva-text"></span> </span> </button>
+      </div>
+     </div>
+    </section>
+    <aside data-template-id="controls-panel" class="canva-card control-card mt-6 rounded-2xl p-4 sm:p-5" aria-labelledby="controls-heading">
+     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+       <h2 id="controls-heading" data-template-id="controls-title" class="canva-text font-extrabold"></h2>
+       <p data-template-id="controls-copy" class="canva-text mt-1 text-sm font-medium"></p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-sm"><span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> <span data-template-id="move-label" class="canva-text mr-2 font-bold"></span> <span class="keycap">←</span><span class="keycap">↑</span><span class="keycap">↓</span><span class="keycap">→</span> <span data-template-id="or-label" class="canva-text font-bold"></span> <span class="keycap">E</span> <span data-template-id="tackle-label" class="canva-text font-bold"></span> <span class="keycap">Q</span> <span data-template-id="dribble-label" class="canva-text font-bold"></span> <span class="keycap">Space</span> <span data-template-id="kick-label" class="canva-text font-bold"></span> <span class="keycap">1</span> <span data-template-id="rocket-label" class="canva-text font-bold"></span>
+      </div>
+     </div>
+    </aside>
+   </main>
+   <footer class="mx-auto mt-6 w-full max-w-5xl pb-2 text-center">
+    <p data-template-id="footer-note" class="canva-text text-sm font-semibold"></p>
+   </footer>
+  </div>
+  <script src="/_sdk/5629ea66dc55d54f.editing_sdk.js" integrity="sha512-snPYzGvgiTEMUBOb+HlCBkFeiM0IRX4hcgA78wvalhC0WnJtaX+RCbosPWtNqZsZ7sZ9NwN0oePZYa+IlMwa+w=="></script>
+  <script>
+    const canvas = document.getElementById("game-canvas");
+    const ctx = canvas.getContext("2d");
+    const homeScoreEl = document.getElementById("home-score");
+    const awayScoreEl = document.getElementById("away-score");
+    const timerEl = document.getElementById("timer");
+    const statusText = document.getElementById("status-text");
+    const restartButton = document.getElementById("restart-button");
+    const soundButton = document.getElementById("sound-button");
+    const soundOn = document.getElementById("sound-on");
+    const soundOff = document.getElementById("sound-off");
+    const rocketStatus = document.getElementById("rocket-status");
+    const difficultySelect = document.getElementById("difficulty-select");
+    const kitSelect = document.getElementById("kit-select");
+    const cpuKitSelect = document.getElementById("cpu-kit-select");
+    const modeSelect = document.getElementById("mode-select");
+    let twoPlayerMode = false;
+    let player2HasBall = false;
+    let player2ChargeStart = 0;
+    let player2ChargePower = 0;
+
+    const kitPalettes = {
+      usa: { name: "USA", home: "#d62828", homeSecondary: "#fffbe8", homeOutline: "#1769e0", away: "#d62828", keeper: "#f7c948" },
+      brazil: { name: "Brazil", home: "#ffd34e", homeOutline: "#1e9a59", away: "#1769e0", keeper: "#ffd34e" },
+      france: { name: "France", home: "#123b78", homeOutline: "#d4af37", away: "#ef3340", keeper: "#f7c948" },
+      germany: { name: "Germany", home: "#fffbe8", homeOutline: "#111827", away: "#d62828", keeper: "#ffd34e" },
+      japan: { name: "Japan", home: "#1769e0", homeOutline: "#ef3340", away: "#1769e0", keeper: "#fffbe8" },
+      spain: { name: "Spain", home: "#d62828", homeOutline: "#123b78", away: "#d62828", keeper: "#f7c948" },
+      england: { name: "England", home: "#fffbe8", homeOutline: "#d62828", away: "#fffbe8", keeper: "#f7c948" },
+      argentina: { name: "Argentina", home: "#75aadb", homeSecondary: "#fffbe8", homeOutline: "#fffbe8", away: "#75aadb", keeper: "#f7c948" },
+      portugal: { name: "Portugal", home: "#d62828", homeOutline: "#1e9a59", away: "#d62828", keeper: "#f7c948" }
+    };
+
+    const field = { width: 960, height: 600, goalTop: 210, goalBottom: 390 };
+    const keys = new Set();
+    let soundEnabled = true;
+    let audioContext;
+    let lastTime = 0;
+    let elapsed = 0;
+    let homeScore = 0;
+    let awayScore = 0;
+    let gameOver = false;
+    let resetDelay = 0;
+    let penaltyMode = false;
+    let penaltyShot = false;
+    let penaltyPause = 0;
+    let penaltyScore = 0;
+    let penaltyKeeperAction = "standing";
+    let penaltyKeeperTimer = 0;
+    let kickCooldown = 0;
+    let cpuShotCooldown = 0;
+    let messageTimer = 0;
+    let chargeStart = 0;
+    let chargePower = 0;
+    let dribbleTimer = 0;
+    let dribbleCooldown = 0;
+    let tackleCooldown = 0;
+    let tacklePossessionTimer = 0;
+    let cpuClearanceProtection = 0;
+    let hasBall = false;
+    let keeperHasBall = false;
+    let rocketEquipped = false;
+    let grapplingEquipped = false;
+    let explosions = [];
+    let tackleIndicator = 0;
+    let dribbleIndicator = 0;
+
+    const player = { x: 250, y: 300, r: 25, speed: 300, color: "#1769e0", secondaryColor: "#1769e0", outlineColor: "#12302a", directionX: 1, directionY: 0 };
+    const cpu = { x: 710, y: 300, r: 25, speed: 212, color: "#ff6b27" };
+    const ball = { x: 480, y: 300, r: 13, vx: 0, vy: 0 };
+    const homeKeeper = { x: 58, y: 300, r: 22, speed: 132, color: "#1769e0" };
+    const awayKeeper = { x: 902, y: 300, r: 22, speed: 132, color: "#ff6b27" };
+
+    function applyKit(kitKey) {
+      const kit = kitPalettes[kitKey] || kitPalettes.spain;
+      player.color = kit.home;
+      player.secondaryColor = kit.homeSecondary || kit.home;
+      player.outlineColor = kit.homeOutline || "#12302a";
+      homeKeeper.color = kit.keeper;
+      homeScoreEl.style.backgroundColor = player.color;
+    }
+
+    function applyCpuKit(kitKey) {
+      const kit = kitPalettes[kitKey] || kitPalettes.usa;
+      // Both selectors use the same complete national kit design, including patterns and keeper color.
+      cpu.color = kit.home;
+      cpu.secondaryColor = kit.homeSecondary || kit.home;
+      cpu.outlineColor = kit.homeOutline || "#12302a";
+      awayKeeper.color = kit.keeper;
+      awayScoreEl.style.backgroundColor = cpu.color;
+    }
+
+    function resetPositions() {
+      player.x = 250; player.y = 300; player.directionX = 1; player.directionY = 0;
+      cpu.x = 710; cpu.y = 300;
+      ball.x = 480; ball.y = 300; ball.vx = 0; ball.vy = 0;
+      kickCooldown = 0;
+      cpuShotCooldown = 0;
+      chargeStart = 0;
+      chargePower = 0;
+      dribbleTimer = 0;
+      dribbleCooldown = 0;
+      tackleCooldown = 0;
+      tacklePossessionTimer = 0;
+      cpuClearanceProtection = 0;
+      hasBall = false;
+      keeperHasBall = false;
+      tackleIndicator = 0;
+      dribbleIndicator = 0;
+    }
+
+    function startPenalty() {
+      if (gameOver || penaltyMode || resetDelay > 0) return;
+      modeSelect.value = "penalty";
+      twoPlayerMode = false;
+      penaltyMode = true;
+      penaltyShot = false;
+      penaltyPause = 0;
+      resetPositions();
+      // Penalties are a separate, vertical shooting mode; match time and play freeze.
+      player.x = 480;
+      player.y = 500;
+      player.directionX = 0;
+      player.directionY = -1;
+      ball.x = 480;
+      ball.y = 500;
+      awayKeeper.x = 480;
+      awayKeeper.y = 135;
+      showMessage("PENALTY MODE — hold Space, then click precisely inside the circled target.", 99);
+    }
+
+    function finishPenalty(scored) {
+      penaltyShot = false;
+      penaltyPause = 3;
+      if (scored) {
+        penaltyScore++;
+        homeScore++;
+        showMessage("Penalty scored! Three-second pause.", 3);
+        tone(660, .16, "square", .08);
+      } else {
+        showMessage("Penalty missed — the keeper got a touch. Three-second pause.", 3);
+        tone(180, .35, "sawtooth", .07);
+      }
+      updateScoreboard();
+    }
+
+    function restartGame() {
+      homeScore = 0;
+      awayScore = 0;
+      penaltyScore = 0;
+      penaltyMode = false;
+      penaltyShot = false;
+      penaltyPause = 0;
+      elapsed = 0;
+      gameOver = false;
+      resetDelay = 0;
+      statusText.textContent = "Kick off! Take the ball to the orange goal.";
+      updateScoreboard();
+      resetPositions();
+      canvas.focus();
+    }
+
+    function updateScoreboard() {
+      homeScoreEl.textContent = homeScore;
+      awayScoreEl.textContent = awayScore;
+      const remain = Math.max(0, 60 - Math.floor(elapsed));
+      const seconds = String(remain % 60).padStart(2, "0");
+      timerEl.textContent = `${Math.floor(remain / 60)}:${seconds}`;
+    }
+
+    function tone(frequency, duration, type = "sine", volume = 0.06) {
+      if (!soundEnabled) return;
+      try {
+        audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(volume, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function showMessage(message, seconds = 1.2) {
+      statusText.textContent = message;
+      messageTimer = seconds;
+    }
+
+    function goal(side) {
+      if (resetDelay > 0 || gameOver) return;
+      if (side === "home") {
+        homeScore++;
+        showMessage("GOOOAL! Blue takes the lead!", 1.6);
+        tone(660, .16, "square", .08);
+        setTimeout(() => tone(880, .24, "square", .08), 140);
+      } else {
+        awayScore++;
+        showMessage("Orange scores! Win it back!", 1.6);
+        tone(180, .35, "sawtooth", .07);
+      }
+      resetDelay = 1.6;
+      updateScoreboard();
+    }
+
+    function respawnOpponents() {
+      cpu.x = 710; cpu.y = 300;
+      homeKeeper.x = 58; homeKeeper.y = 300;
+      awayKeeper.x = 902; awayKeeper.y = 300;
+      showMessage("Rocket impact! Opponents respawned.", 1.4);
+      tone(120, .18, "sawtooth", .07);
+    }
+
+    function getPitchPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      // Convert the pointer from displayed canvas pixels into the fixed game-field coordinates.
+      // Keep this shared by both skills so responsive scaling never changes the aim direction.
+      const scaleX = field.width / rect.width;
+      const scaleY = field.height / rect.height;
+      const x = (event.clientX - rect.left) * scaleX;
+      const y = (event.clientY - rect.top) * scaleY;
+      return {
+        x: Math.max(32, Math.min(field.width - 32, x)),
+        y: Math.max(32, Math.min(field.height - 32, y))
+      };
+    }
+
+    function firePenaltyShot(event) {
+      if (!penaltyMode || penaltyShot || gameOver) return;
+      const point = getPitchPoint(event);
+      const power = Math.max(0.25, Math.min(1, chargePower / 2.2));
+      // Aim for the open part of the goal mouth, not directly at the keeper.
+      // The click chooses a side, while the shot carries through the box into the net.
+      const keeperSide = awayKeeper.y < field.height / 2 ? 1 : -1;
+      const clickedTargetY = Math.max(field.goalTop + 18, Math.min(field.goalBottom - 18, point.y));
+      const openTargetY = awayKeeper.y + keeperSide * (92 + power * 34);
+      const targetY = Math.max(field.goalTop + 18, Math.min(field.goalBottom - 18, (clickedTargetY + openTargetY) / 2));
+      // In penalty mode the click is the exact target on the vertical goal.
+      const directionX = point.x - ball.x;
+      const directionY = point.y - ball.y;
+      const distance = Math.hypot(directionX, directionY) || 1;
+      ball.vx = directionX / distance * (520 + power * 520);
+      ball.vy = directionY / distance * (520 + power * 520);
+      hasBall = false;
+      penaltyShot = true;
+      chargePower = 0;
+      penaltyKeeperAction = ["standing", "left", "right"][Math.floor(Math.random() * 3)];
+      penaltyKeeperTimer = 0.8;
+      showMessage(`Penalty shot! Keeper ${penaltyKeeperAction === "standing" ? "stands" : `dives ${penaltyKeeperAction}`}!`, 1.4);
+      tone(440 + power * 240, .12, "square", .05);
+    }
+
+    function fireGrapplingHook(event) {
+      if (!grapplingEquipped || gameOver || resetDelay > 0) return false;
+      const point = getPitchPoint(event);
+      player.x = point.x;
+      player.y = point.y;
+      clampPlayer(player);
+      if (hasBall) {
+        ball.x = player.x + player.directionX * (player.r + ball.r + 1);
+        ball.y = player.y + player.directionY * (player.r + ball.r + 1);
+      }
+      grapplingEquipped = false;
+      showMessage("Grappling Hook! You teleported across the pitch.", 1.4);
+      tone(880, .12, "triangle", .06);
+      return true;
+    }
+
+    function fireRocket(event) {
+      if (!rocketEquipped || gameOver || resetDelay > 0) return;
+      const point = getPitchPoint(event);
+      const x = point.x;
+      const y = point.y;
+      explosions.push({ x, y, age: 0 });
+      const hitCpu = Math.hypot(x - cpu.x, y - cpu.y) < 76;
+      const hitKeeper = Math.hypot(x - homeKeeper.x, y - homeKeeper.y) < 76 || Math.hypot(x - awayKeeper.x, y - awayKeeper.y) < 76;
+      if (hitCpu || hitKeeper) respawnOpponents();
+      rocketEquipped = false;
+      rocketStatus.textContent = "PRESS 1 TO RE-EQUIP";
+      tone(90, .22, "square", .08);
+    }
+
+    function clampPlayer(entity) {
+      entity.x = Math.max(entity.r + 8, Math.min(field.width - entity.r - 8, entity.x));
+      entity.y = Math.max(entity.r + 8, Math.min(field.height - entity.r - 8, entity.y));
+    }
+
+    function moveToward(entity, targetX, targetY, speed, dt) {
+      const dx = targetX - entity.x;
+      const dy = targetY - entity.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      entity.x += (dx / distance) * speed * dt;
+      entity.y += (dy / distance) * speed * dt;
+    }
+
+    function kickBall(kicker, power) {
+      const dx = ball.x - kicker.x;
+      const dy = ball.y - kicker.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      ball.vx = (dx / distance) * power;
+      ball.vy = (dy / distance) * power;
+    }
+
+    function playerMovement(dt) {
+      let dx = 0, dy = 0;
+      // In two-player mode, keep arrow keys exclusively on Player 2.
+      if (!twoPlayerMode && keys.has("arrowleft")) dx -= 1;
+      if (!twoPlayerMode && keys.has("arrowright")) dx += 1;
+      if (!twoPlayerMode && keys.has("arrowup")) dy -= 1;
+      if (!twoPlayerMode && keys.has("arrowdown")) dy += 1;
+      if (keys.has("a")) dx -= 1;
+      if (keys.has("d")) dx += 1;
+      if (keys.has("w")) dy -= 1;
+      if (keys.has("s")) dy += 1;
+
+      if (dx || dy) {
+        const length = Math.hypot(dx, dy);
+        player.directionX = dx / length;
+        player.directionY = dy / length;
+        player.x += player.directionX * player.speed * dt;
+        player.y += player.directionY * player.speed * dt;
+      }
+      clampPlayer(player);
+    }
+
+    function update(dt) {
+      if (gameOver) return;
+      // Penalty mode is independent of the 60-second match clock.
+      if (penaltyMode) {
+        if (penaltyPause > 0) {
+          penaltyPause -= dt;
+          if (penaltyPause <= 0) {
+            resetPositions();
+            player.x = 480;
+            player.y = 500;
+            player.directionX = 0;
+            player.directionY = -1;
+            ball.x = 480;
+            ball.y = 500;
+            awayKeeper.x = 480;
+            awayKeeper.y = 135;
+            showMessage("Next penalty — hold Space, then click the target.", 2);
+          }
+          return;
+        }
+      } else {
+        elapsed += dt;
+      }
+      if (elapsed >= 60) {
+        elapsed = 60;
+        gameOver = true;
+        const result = homeScore === awayScore ? "Full time — a thrilling draw!" : homeScore > awayScore ? "Full time — Player wins the match!" : "Full time — CPU wins this one!";
+        showMessage(result, 100);
+        tone(300, .55, "triangle", .08);
+        updateScoreboard();
+        return;
+      }
+
+      if (penaltyPause > 0) {
+        penaltyPause -= dt;
+        if (penaltyPause <= 0) {
+          resetPositions();
+          player.x = 480;
+          player.y = 500;
+          player.directionX = 0;
+          player.directionY = -1;
+          ball.x = 480;
+          ball.y = 500;
+          awayKeeper.x = 480;
+          awayKeeper.y = 135;
+          showMessage("Next penalty — hold Space, then click the target.", 2);
+        }
+        updateScoreboard();
+        return;
+      }
+      if (resetDelay > 0) {
+        resetDelay -= dt;
+        if (resetDelay <= 0) {
+          resetPositions();
+          showMessage("Back to the center circle!", 1);
+        }
+        return;
+      }
+      if (penaltyMode && !penaltyShot) {
+        updateScoreboard();
+        return;
+      }
+
+      playerMovement(dt);
+      if (keys.has(" ")) {
+        chargePower = Math.min(2.2, chargePower + dt);
+      } else {
+        chargePower = Math.max(0, chargePower - dt * .32);
+      }
+      if (keys.has("/") && twoPlayerMode) {
+        player2ChargePower = Math.min(2.2, player2ChargePower + dt);
+      } else {
+        player2ChargePower = Math.max(0, player2ChargePower - dt * .32);
+      }
+      kickCooldown = Math.max(0, kickCooldown - dt);
+      cpuShotCooldown = Math.max(0, cpuShotCooldown - dt);
+
+      const cpuTargetX = ball.x < 620 ? ball.x - 8 : ball.x;
+      const difficulty = difficultySelect.value;
+      const difficultySpeed = difficulty === "easy" ? 0.78 : difficulty === "hard" ? 1.22 : 1;
+      if (!twoPlayerMode) moveToward(cpu, cpuTargetX, ball.y, cpu.speed * difficultySpeed, dt);
+      clampPlayer(cpu);
+
+      // Keep the CPU attacker from passing through its own goalkeeper.
+      const cpuKeeperDistance = Math.hypot(cpu.x - awayKeeper.x, cpu.y - awayKeeper.y);
+      const cpuKeeperMinimum = cpu.r + awayKeeper.r + 4;
+      if (cpuKeeperDistance < cpuKeeperMinimum) {
+        const separationX = cpu.x - awayKeeper.x;
+        const separationY = cpu.y - awayKeeper.y;
+        const separationDistance = cpuKeeperDistance || 1;
+        cpu.x = awayKeeper.x + (separationX / separationDistance) * cpuKeeperMinimum;
+        cpu.y = awayKeeper.y + (separationY / separationDistance) * cpuKeeperMinimum;
+        clampPlayer(cpu);
+      }
+
+      const cpuDistance = Math.hypot(ball.x - cpu.x, ball.y - cpu.y);
+      if (!twoPlayerMode && cpuDistance < cpu.r + ball.r + 4 && cpuClearanceProtection <= 0 && (!hasBall || (dribbleTimer <= 0 && tacklePossessionTimer <= 0))) {
+        if (hasBall) hasBall = false;
+        const baseShootRate = difficulty === "easy" ? 8.5 : difficulty === "hard" ? 20 : 14;
+        // Favor frequent long-range attempts from outside the blue penalty box.
+        const outsideBox = ball.x > 180;
+        const longRangeBonus = outsideBox ? 2.35 : 1;
+        const closeRangeBonus = cpu.x > 760 ? 1.2 : 1;
+        const shootRate = baseShootRate * longRangeBonus * closeRangeBonus;
+        // Shoot early from distance instead of carrying the ball toward the user goalkeeper.
+        const attackingRange = ball.x < 860 && cpu.x < 900;
+        const canShoot = attackingRange && Math.random() < dt * shootRate;
+        if (canShoot) {
+          // The CPU can shoot on the same touch that wins possession; difficulty still controls power and aim.
+          cpuShotCooldown = difficulty === "easy" ? 1.35 : difficulty === "hard" ? .65 : .95;
+          const goalMargin = difficulty === "hard" ? 18 : difficulty === "normal" ? 24 : 32;
+          const openSide = homeKeeper.y < field.height / 2 ? 1 : -1;
+          const keeperAvoidance = openSide * (difficulty === "hard" ? 72 + Math.random() * 48 : 55 + Math.random() * 55);
+          const accuracySpread = difficulty === "hard" ? 18 : difficulty === "normal" ? 32 : 52;
+          const shotTargetY = Math.max(field.goalTop + goalMargin, Math.min(field.goalBottom - goalMargin, homeKeeper.y + keeperAvoidance + (Math.random() - .5) * accuracySpread));
+          const shotDirectionX = -field.width;
+          const shotDirectionY = shotTargetY - ball.y;
+          const shotDirectionLength = Math.hypot(shotDirectionX, shotDirectionY) || 1;
+          const shotPower = difficulty === "hard" ? 930 + Math.random() * 210 : difficulty === "normal" ? 820 + Math.random() * 190 : 680 + Math.random() * 180;
+          ball.vx = (shotDirectionX / shotDirectionLength) * shotPower;
+          ball.vy = (shotDirectionY / shotDirectionLength) * shotPower;
+          tone(210, .06, "triangle", .04);
+        } else {
+          // When not shooting, the orange defender clears left toward the blue half.
+          ball.vx = -235;
+          ball.vy = (300 - ball.y) * .45;
+        }
+      }
+
+      const player2Movement = (dt) => {
+        let dx = 0, dy = 0;
+        if (keys.has("arrowleft")) dx -= 1;
+        if (keys.has("arrowright")) dx += 1;
+        if (keys.has("arrowup")) dy -= 1;
+        if (keys.has("arrowdown")) dy += 1;
+        if (dx || dy) { const length = Math.hypot(dx, dy); cpu.directionX = dx / length; cpu.directionY = dy / length; cpu.x += cpu.directionX * cpu.speed * dt; cpu.y += cpu.directionY * cpu.speed * dt; }
+        clampPlayer(cpu);
+      };
+      if (twoPlayerMode) player2Movement(dt);
+
+      const playerDistance = Math.hypot(ball.x - player.x, ball.y - player.y);
+      const looseBall = !hasBall && !keeperHasBall && Math.hypot(ball.vx, ball.vy) < 180;
+      if (looseBall && playerDistance < player.r + ball.r + 8) {
+        ball.vx = 0;
+        ball.vy = 0;
+        if (chargePower > .12) {
+          const power = 300 + chargePower * 360;
+          ball.vx = player.directionX * power;
+          ball.vy = player.directionY * power;
+          kickCooldown = .22;
+          chargePower = 0;
+          chargeStart = 0;
+          showMessage("Charged shot released on pickup!", 1.1);
+          tone(440 + power / 8, .1, "square", .05);
+        } else {
+          hasBall = true;
+          showMessage("Ball attached — hold Space to charge your shot!", 1.4);
+        }
+      }
+
+      // Keepers track the ball inside their penalty area and deflect shots on goal.
+      const keeperDifficulty = difficultySelect.value;
+      const homeKeeperSpeed = keeperDifficulty === "easy" ? 96 : keeperDifficulty === "hard" ? 126 : 112;
+      const awayKeeperSpeed = keeperDifficulty === "easy" ? 132 : keeperDifficulty === "hard" ? 238 : 178;
+      [homeKeeper, awayKeeper].forEach((keeper) => {
+        const keeperSpeed = keeper === homeKeeper ? homeKeeperSpeed : awayKeeperSpeed;
+        const inBox = keeper === homeKeeper ? ball.x < 180 : ball.x > 780;
+        const playerInAwayBox = keeper === awayKeeper && player.x > 780;
+        const trackingTargetY = playerInAwayBox && !hasBall ? player.y : ball.y;
+        const targetY = inBox || playerInAwayBox ? trackingTargetY : field.height / 2;
+        keeper.y += Math.sign(targetY - keeper.y) * Math.min(Math.abs(targetY - keeper.y), keeperSpeed * dt);
+        keeper.y = Math.max(keeper.r + 12, Math.min(field.height - keeper.r - 12, keeper.y));
+        const keeperDistance = Math.hypot(ball.x - keeper.x, ball.y - keeper.y);
+        const saveReach = keeper === awayKeeper ? (keeperDifficulty === "easy" ? 4 : keeperDifficulty === "hard" ? 16 : 10) : 8;
+        if (keeper === homeKeeper && keeperDistance < keeper.r + ball.r + saveReach && !hasBall && !keeperHasBall) {
+          keeperHasBall = true;
+          ball.x = keeper.x + keeper.r + ball.r + 3;
+          ball.y = keeper.y;
+          // Clear into open space on the blue half, deliberately away from the CPU attacker.
+          const clearanceTargetX = 360;
+          const clearanceTargetY = Math.max(90, Math.min(field.height - 90, player.y + (player.y < field.height / 2 ? 120 : -120)));
+          const passX = clearanceTargetX - ball.x;
+          const passY = clearanceTargetY - ball.y;
+          const passDistance = Math.hypot(passX, passY) || 1;
+          ball.vx = (passX / passDistance) * 620;
+          ball.vy = (passY / passDistance) * 620;
+          cpuClearanceProtection = 1.15;
+          keeperHasBall = false;
+          showMessage("Keeper cleared it into open space!", 1.4);
+          tone(360, .12, "triangle", .05);
+        } else if (keeperDistance < keeper.r + ball.r + saveReach && !hasBall && !keeperHasBall && Math.hypot(ball.vx, ball.vy) > 80) {
+          if (penaltyMode && penaltyShot && keeper === awayKeeper) {
+            finishPenalty(false);
+          }
+          const awayFromGoal = keeper === homeKeeper ? 1 : -1;
+          ball.x = keeper.x + awayFromGoal * (keeper.r + ball.r + 2);
+          ball.vx = awayFromGoal * Math.max(260, Math.abs(ball.vx) * .78);
+          ball.vy += (ball.y - keeper.y) * 2.2;
+          showMessage("Brilliant save by the goalkeeper!", 1.1);
+          tone(240, .08, "triangle", .05);
+        }
+      });
+
+      // The enemy goalkeeper physically blocks the blue player inside the goal area.
+      if (player.x > 780) {
+        const keeperDistance = Math.hypot(player.x - awayKeeper.x, player.y - awayKeeper.y);
+        const keeperMinimum = player.r + awayKeeper.r + 4;
+        if (keeperDistance < keeperMinimum) {
+          const separationX = player.x - awayKeeper.x;
+          const separationY = player.y - awayKeeper.y;
+          const separationDistance = keeperDistance || 1;
+          player.x = awayKeeper.x + (separationX / separationDistance) * keeperMinimum;
+          player.y = awayKeeper.y + (separationY / separationDistance) * keeperMinimum;
+          clampPlayer(player);
+          if (hasBall) {
+            hasBall = false;
+            ball.x = player.x - player.r - ball.r - 3;
+            ball.y = player.y;
+            ball.vx = -260;
+            ball.vy = (player.y - awayKeeper.y) * 3;
+            showMessage("The orange goalkeeper blocked you!", 1.1);
+            tone(190, .08, "square", .05);
+          }
+        }
+      }
+
+      if (twoPlayerMode && !hasBall && !player2HasBall && !keeperHasBall && Math.hypot(ball.vx, ball.vy) < 180 && Math.hypot(ball.x - cpu.x, ball.y - cpu.y) < cpu.r + ball.r + 8) {
+        player2HasBall = true; ball.vx = 0; ball.vy = 0; showMessage("Player 2 has the ball!", 1.1);
+      }
+      if (player2HasBall) {
+        const orbit = dribbleTimer > 0 ? dribbleTimer * 18 : 0;
+        const cos = Math.cos(orbit);
+        const sin = Math.sin(orbit);
+        const offsetX = cpu.directionX * (cpu.r + ball.r + 1) - cpu.directionY * orbit;
+        const offsetY = cpu.directionY * (cpu.r + ball.r + 1) + cpu.directionX * orbit;
+        ball.x = cpu.x + offsetX * cos - offsetY * sin;
+        ball.y = cpu.y + offsetX * sin + offsetY * cos;
+      } else if (hasBall) {
+        const orbit = dribbleTimer > 0 ? dribbleTimer * 18 : 0;
+        const cos = Math.cos(orbit);
+        const sin = Math.sin(orbit);
+        const offsetX = player.directionX * (player.r + ball.r + 1) - player.directionY * orbit;
+        const offsetY = player.directionY * (player.r + ball.r + 1) + player.directionX * orbit;
+        ball.x = player.x + offsetX * cos - offsetY * sin;
+        ball.y = player.y + offsetX * sin + offsetY * cos;
+      } else {
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        ball.vx *= Math.pow(.18, dt);
+        ball.vy *= Math.pow(.18, dt);
+      }
+      dribbleTimer = Math.max(0, dribbleTimer - dt);
+      dribbleCooldown = Math.max(0, dribbleCooldown - dt);
+      tackleCooldown = Math.max(0, tackleCooldown - dt);
+      tacklePossessionTimer = Math.max(0, tacklePossessionTimer - dt);
+      cpuClearanceProtection = Math.max(0, cpuClearanceProtection - dt);
+      tackleIndicator = Math.max(0, tackleIndicator - dt);
+      dribbleIndicator = Math.max(0, dribbleIndicator - dt);
+      explosions.forEach((blast) => blast.age += dt);
+
+      if (ball.y - ball.r < 0 || ball.y + ball.r > field.height) {
+        ball.vy *= -0.82;
+        ball.y = Math.max(ball.r, Math.min(field.height - ball.r, ball.y));
+      }
+
+      // Penalty scoring uses the circled target at the top of the vertical pitch.
+      if (penaltyMode && penaltyShot) {
+        const targetHit = Math.hypot(ball.x - field.width / 2, ball.y - 82) < 58;
+        if (targetHit) finishPenalty(true);
+        else if (ball.y < 28 || ball.x < 24 || ball.x > field.width - 24) finishPenalty(false);
+        if (penaltyShot && Math.hypot(ball.x - awayKeeper.x, ball.y - awayKeeper.y) < awayKeeper.r + ball.r + 8) finishPenalty(false);
+      }
+      const insideGoal = ball.y > field.goalTop && ball.y < field.goalBottom;
+      if (ball.x - ball.r < 0) {
+        if (penaltyMode && penaltyShot) {
+          finishPenalty(false);
+        } else if (insideGoal) goal("away");
+        else { ball.x = ball.r; ball.vx *= -0.8; }
+      }
+      if (ball.x + ball.r > field.width) {
+        if (penaltyMode && penaltyShot) {
+          if (insideGoal) finishPenalty(true);
+          else finishPenalty(false);
+        } else if (insideGoal) goal("home");
+        else { ball.x = field.width - ball.r; ball.vx *= -0.8; }
+      }
+
+      // A ball pinned against a corner is awarded to the blue player as a goal kick.
+      const cornerTrap = (ball.x <= ball.r + 2 || ball.x >= field.width - ball.r - 2) &&
+        (ball.y <= ball.r + 2 || ball.y >= field.height - ball.r - 2) &&
+        Math.hypot(ball.vx, ball.vy) < 90 && Math.hypot(ball.x - cpu.x, ball.y - cpu.y) < cpu.r + ball.r + 28;
+      if (cornerTrap) {
+        resetPositions();
+        ball.x = player.x + player.r + ball.r + 8;
+        ball.y = player.y;
+        showMessage("Goal kick! Blue has the ball.", 1.4);
+        tone(520, .1, "triangle", .05);
+      }
+
+      if (messageTimer > 0) {
+        messageTimer -= dt;
+        if (messageTimer <= 0) statusText.textContent = "Keep moving — Space kicks when you're close!";
+      }
+      updateScoreboard();
+    }
+
+    function drawField() {
+      ctx.clearRect(0, 0, field.width, field.height);
+      if (penaltyMode) {
+        ctx.fillStyle = "#239b59";
+        ctx.fillRect(0, 0, field.width, field.height);
+        ctx.fillStyle = "rgba(13,121,65,.2)";
+        for (let i = 0; i < 8; i += 2) ctx.fillRect(0, i * 75, field.width, 75);
+        ctx.strokeStyle = "#f9f6d9";
+        ctx.lineWidth = 7;
+        ctx.strokeRect(24, 24, field.width - 48, field.height - 48);
+        ctx.strokeRect(135, 24, 690, 235);
+        ctx.beginPath();
+        ctx.arc(field.width / 2, 82, 58, 0, Math.PI * 2);
+        ctx.strokeStyle = "#ff6b27";
+        ctx.lineWidth = 8;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255,107,39,.22)";
+        ctx.fill();
+        ctx.strokeStyle = "#f9f6d9";
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.arc(field.width / 2, 259, 86, 0, Math.PI);
+        ctx.stroke();
+        return;
+      }
+      ctx.fillStyle = "#239b59";
+      ctx.fillRect(0, 0, field.width, field.height);
+
+      for (let i = 0; i < 8; i++) {
+        ctx.fillStyle = i % 2 === 0 ? "rgba(13, 121, 65, .20)" : "rgba(255,255,255,.035)";
+        ctx.fillRect(i * 120, 0, 120, field.height);
+      }
+
+      ctx.strokeStyle = "#f9f6d9";
+      ctx.lineWidth = 7;
+      ctx.strokeRect(24, 24, field.width - 48, field.height - 48);
+      ctx.beginPath();
+      ctx.moveTo(field.width / 2, 24);
+      ctx.lineTo(field.width / 2, field.height - 24);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(field.width / 2, field.height / 2, 78, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(field.width / 2, field.height / 2, 5, 0, Math.PI * 2);
+      ctx.fillStyle = "#f9f6d9";
+      ctx.fill();
+
+      ctx.strokeRect(24, 145, 125, 310);
+      ctx.strokeRect(field.width - 149, 145, 125, 310);
+      ctx.beginPath();
+      ctx.arc(149, 300, 50, -Math.PI / 2, Math.PI / 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(field.width - 149, 300, 50, Math.PI / 2, Math.PI * 1.5);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,.24)";
+      ctx.fillRect(0, field.goalTop, 24, field.goalBottom - field.goalTop);
+      ctx.fillRect(field.width - 24, field.goalTop, 24, field.goalBottom - field.goalTop);
+    }
+
+    function drawPlayer(entity, number, label) {
+      ctx.save();
+      ctx.translate(entity.x, entity.y + 7);
+      ctx.fillStyle = "rgba(10, 42, 28, .28)";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, entity.r, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(entity.x, entity.y);
+      ctx.fillStyle = "#fffbe8";
+      ctx.beginPath();
+      ctx.arc(0, -9, entity.r * .56, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = entity.color;
+      ctx.beginPath();
+      ctx.arc(0, 7, entity.r, 0, Math.PI * 2);
+      ctx.fill();
+      if (entity === player && entity.secondaryColor && entity.secondaryColor !== entity.color) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 7, entity.r - 1, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.fillStyle = entity.secondaryColor;
+        ctx.fillRect(-entity.r, -18, entity.r * 2, 10);
+        ctx.fillRect(-entity.r, 2, entity.r * 2, 10);
+        ctx.restore();
+      }
+      ctx.strokeStyle = entity.outlineColor || "#12302a";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = "white";
+      ctx.font = "800 19px DM Sans";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(number, 0, 8);
+
+      ctx.fillStyle = "#12302a";
+      ctx.font = "800 13px DM Sans";
+      ctx.fillText(label, 0, -43);
+
+      if ((entity === player && chargePower > 0) || (entity === cpu && twoPlayerMode && player2ChargePower > 0)) {
+        const entityChargePower = entity === cpu ? player2ChargePower : chargePower;
+        const powerRatio = entityChargePower / 2.2;
+        ctx.fillStyle = "#fffbe8";
+        ctx.strokeStyle = "#12302a";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(-58, -88, 116, 18, 6);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = powerRatio > .72 ? "#ff6b27" : "#ffd34e";
+        ctx.fillRect(-52, -82, 104 * powerRatio, 6);
+        ctx.fillStyle = "#12302a";
+        ctx.font = "800 12px DM Sans";
+        ctx.fillText("SHOT POWER", 0, -94);
+      }
+
+      if (entity === player && (tackleIndicator > 0 || dribbleIndicator > 0)) {
+        const icon = dribbleIndicator > 0 ? "↻" : "⚡";
+        const caption = dribbleIndicator > 0 ? "DRIBBLE" : "TACKLE";
+        ctx.fillStyle = dribbleIndicator > 0 ? "#ffd34e" : "#fffbe8";
+        ctx.strokeStyle = "#12302a";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(-48, -82, 96, 25, 7);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#12302a";
+        ctx.font = "800 15px DM Sans";
+        ctx.fillText(`${icon} ${caption}`, 0, -69);
+      }
+      ctx.restore();
+    }
+
+    function drawGoalkeeper(keeper, label) {
+      ctx.save();
+      ctx.translate(keeper.x, keeper.y);
+      ctx.fillStyle = "rgba(10, 42, 28, .28)";
+      ctx.beginPath();
+      ctx.ellipse(0, 28, keeper.r, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = keeper.color || "#ffd34e";
+      ctx.beginPath();
+      ctx.arc(0, 7, keeper.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#12302a";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = "#fffbe8";
+      ctx.beginPath();
+      ctx.arc(0, -9, keeper.r * .56, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#12302a";
+      ctx.font = "800 12px DM Sans";
+      ctx.textAlign = "center";
+      ctx.fillText(label, 0, -39);
+      ctx.restore();
+    }
+
+    function drawExplosions() {
+      explosions = explosions.filter((blast) => blast.age < .45);
+      explosions.forEach((blast) => {
+        const progress = blast.age / .45;
+        ctx.save();
+        ctx.globalAlpha = 1 - progress;
+        ctx.fillStyle = "#ff6b27";
+        ctx.beginPath();
+        ctx.arc(blast.x, blast.y, 18 + progress * 70, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffd34e";
+        ctx.lineWidth = 9;
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    function drawBall() {
+      ctx.save();
+      ctx.translate(ball.x, ball.y);
+      ctx.fillStyle = "rgba(8, 56, 29, .3)";
+      ctx.beginPath();
+      ctx.ellipse(3, 12, ball.r, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fffdf0";
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#12302a";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = "#12302a";
+      ctx.beginPath();
+      ctx.arc(0, 0, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawEndOverlay() {
+      if (!gameOver) return;
+      ctx.fillStyle = "rgba(18,48,42,.72)";
+      ctx.fillRect(0, 0, field.width, field.height);
+      ctx.fillStyle = "#fffbe8";
+      ctx.textAlign = "center";
+      ctx.font = "800 54px DM Sans";
+      ctx.fillText("FULL TIME!", 480, 260);
+      ctx.font = "700 29px DM Sans";
+      const summary = homeScore === awayScore ? `${homeScore} — ${awayScore}  DRAW` : homeScore > awayScore ? `PLAYER WINS  ${homeScore} — ${awayScore}` : `CPU WINS  ${awayScore} — ${homeScore}`;
+      ctx.fillText(summary, 480, 310);
+      ctx.fillStyle = "#ffd34e";
+      ctx.font = "700 21px DM Sans";
+      ctx.fillText("Press Restart Match for another round", 480, 356);
+    }
+
+    function render() {
+      drawField();
+      if (penaltyMode) {
+        drawGoalkeeper(awayKeeper, "KEEPER");
+        drawPlayer(player, "7", "YOU");
+      } else {
+        drawGoalkeeper(homeKeeper, "KEEPER");
+        drawGoalkeeper(awayKeeper, "KEEPER");
+        drawPlayer(player, "7", "YOU");
+        drawPlayer(cpu, "10", twoPlayerMode ? "P2" : "CPU");
+      }
+      drawBall();
+      drawExplosions();
+      drawEndOverlay();
+    }
+
+    function loop(timestamp) {
+      const dt = Math.min(.035, (timestamp - lastTime) / 1000 || 0);
+      lastTime = timestamp;
+      update(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    function handleKeyDown(event) {
+      const key = event.key.toLowerCase();
+      if (twoPlayerMode && event.key === "Control") keys.add("rightcontrol");
+      if (twoPlayerMode && event.key === ".") keys.add(".");
+      if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "w", "a", "s", "d", "e", "q", "f", "/"].includes(key)) event.preventDefault();
+      keys.add(key);
+
+      if (twoPlayerMode && key === "f" && !event.repeat && hasBall) { hasBall = false; ball.vx = player.directionX * 560; ball.vy = player.directionY * 560; tone(520, .1, "square", .05); }
+      if (twoPlayerMode && key === "/" && !event.repeat && !gameOver && resetDelay <= 0 && kickCooldown <= 0) {
+        player2ChargeStart = performance.now();
+      }
+      if (key === " " && !event.repeat && !gameOver && resetDelay <= 0 && kickCooldown <= 0) {
+        chargeStart = performance.now();
+      }
+      if ((key === "e" || (twoPlayerMode && key === ".")) && !event.repeat && !gameOver && resetDelay <= 0 && tackleCooldown <= 0) {
+        if (twoPlayerMode && Math.hypot(player.x - cpu.x, player.y - cpu.y) < player.r + cpu.r + 34) {
+          tackleCooldown = 5;
+          tackleIndicator = 1.1;
+          if (player2HasBall) { player2HasBall = false; hasBall = true; showMessage("Player 1 tackled Player 2!", 1.1); }
+          else if (hasBall) { hasBall = false; player2HasBall = true; showMessage("Player 2 tackled Player 1!", 1.1); }
+        }
+
+        const tackleDistance = Math.hypot(ball.x - player.x, ball.y - player.y);
+        if (tackleDistance < player.r + ball.r + 30) {
+          const storedTacklePower = chargePower;
+          dribbleTimer = 0;
+          tacklePossessionTimer = .7;
+          tackleCooldown = 5;
+          tackleIndicator = 1.1;
+          if (storedTacklePower > .12) {
+            const power = 300 + storedTacklePower * 360;
+            hasBall = false;
+            ball.x = player.x + player.directionX * (player.r + ball.r + 1);
+            ball.y = player.y + player.directionY * (player.r + ball.r + 1);
+            ball.vx = player.directionX * power;
+            ball.vy = player.directionY * power;
+            kickCooldown = .22;
+            chargePower = 0;
+            chargeStart = 0;
+            showMessage("Slide tackle won it — charged shot fired!", 1.1);
+            tone(440 + storedTacklePower * 100, .1, "square", .05);
+          } else {
+            hasBall = true;
+            showMessage("Slide tackle won the ball!", 1.1);
+            tone(260, .08, "square", .05);
+          }
+        }
+      }
+      if (key === "1" && !event.repeat && !gameOver) {
+        rocketEquipped = true;
+        grapplingEquipped = false;
+        rocketStatus.textContent = "EQUIPPED — CLICK TO FIRE";
+        showMessage("Rocket Launcher equipped. Click the pitch to explode opponents!", 1.8);
+        tone(760, .1, "square", .05);
+      }
+      if (key === "2" && !event.repeat && !gameOver) {
+        grapplingEquipped = true;
+        rocketEquipped = false;
+        rocketStatus.textContent = "GRAPPLE READY — CLICK TO TELEPORT";
+        showMessage("Grappling Hook equipped. Click anywhere on the pitch to teleport!", 1.8);
+        tone(980, .1, "triangle", .05);
+      }
+      if ((key === "q" || (twoPlayerMode && key === "rightcontrol")) && !event.repeat && (hasBall || player2HasBall) && !gameOver && resetDelay <= 0 && dribbleCooldown <= 0) {
+        dribbleTimer = 1;
+        dribbleCooldown = 5;
+        dribbleIndicator = 1.1;
+        showMessage("Dribble spin — untouchable for 1 second!", 1.1);
+        tone(580, .1, "triangle", .04);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    window.addEventListener("keyup", (event) => {
+      const key = event.key.toLowerCase();
+      keys.delete(key);
+      if (event.key === "Control") keys.delete("rightcontrol");
+      if (event.key === ".") keys.delete(".");
+      if (key === " " && chargeStart) {
+        if (hasBall && chargePower > .12) {
+          const power = 300 + chargePower * 360;
+          const heldPower = chargePower;
+          hasBall = false;
+          ball.vx = player.directionX * power;
+          ball.vy = player.directionY * power;
+          kickCooldown = .22;
+          chargePower = 0;
+          tone(440 + heldPower * 100, .1, "square", .05);
+        }
+        chargeStart = 0;
+      }
+      if (twoPlayerMode && key === "/" && player2ChargeStart) {
+        if (player2HasBall && player2ChargePower > .12) {
+          const power = 300 + player2ChargePower * 360;
+          const heldPower = player2ChargePower;
+          player2HasBall = false;
+          ball.vx = cpu.directionX * power;
+          ball.vy = cpu.directionY * power;
+          kickCooldown = .22;
+          player2ChargePower = 0;
+          tone(440 + heldPower * 100, .1, "square", .05);
+        }
+        player2ChargeStart = 0;
+      }
+    });
+
+    window.addEventListener("keyup", (event) => keys.delete(event.key.toLowerCase()));
+    canvas.addEventListener("pointerdown", (event) => {
+      canvas.focus();
+      if (penaltyMode && !penaltyShot && penaltyPause <= 0) {
+        firePenaltyShot(event);
+      } else if (!fireGrapplingHook(event)) fireRocket(event);
+    });
+    restartButton.addEventListener("click", restartGame);
+    difficultySelect.addEventListener("change", () => {
+      const names = { easy: "Easy mode selected.", normal: "Normal mode selected.", hard: "Hard mode selected." };
+      showMessage(names[difficultySelect.value], 1.2);
+    });
+
+    modeSelect.addEventListener("change", () => {
+      const selectedMode = modeSelect.value;
+      twoPlayerMode = selectedMode === "two";
+      player2HasBall = false;
+      player2ChargeStart = 0;
+      player2ChargePower = 0;
+      rocketEquipped = false;
+      grapplingEquipped = false;
+      if (selectedMode === "penalty") {
+        startPenalty();
+      } else {
+        penaltyMode = false;
+        penaltyShot = false;
+        penaltyPause = 0;
+        resetPositions();
+        showMessage(twoPlayerMode ? "2 Players: blue vs orange — no abilities!" : "1 Player: defeat the orange CPU!", 1.8);
+      }
+    });
+
+    kitSelect.addEventListener("change", () => {
+      const kit = kitPalettes[kitSelect.value] || kitPalettes.spain;
+      applyKit(kitSelect.value);
+      showMessage(`${kit.name} home kit selected!`, 1.2);
+    });
+
+    cpuKitSelect.addEventListener("change", () => {
+      const kit = kitPalettes[cpuKitSelect.value] || kitPalettes.usa;
+      applyCpuKit(cpuKitSelect.value);
+      showMessage(`${kit.name} CPU kit selected!`, 1.2);
+    });
+
+    soundButton.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      soundOn.classList.toggle("hidden-state", !soundEnabled);
+      soundOff.classList.toggle("hidden-state", soundEnabled);
+      soundButton.setAttribute("aria-pressed", String(soundEnabled));
+      if (soundEnabled) tone(520, .08, "sine", .05);
+    });
+
+    lucide.createIcons();
+    applyKit(kitSelect.value);
+    applyCpuKit(cpuKitSelect.value);
+    updateScoreboard();
+    render();
+    requestAnimationFrame(loop);
+  </script>
+ </body>
+</html>
+
